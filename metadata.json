@@ -1,0 +1,8 @@
+{
+  "name": "UnisonIBP Concurrent Planning Platform",
+  "description": "Enterprise Integrated Business Planning (IBP) and Concurrent Execution Platform unifying Enterprise Knowledge Graphs, driver-based demand sensing, finite-capacity MILP scheduling, and copy-on-write scenario sandboxing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

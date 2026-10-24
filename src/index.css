@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-sans: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #0B0F17;
+    color: #F1F5F9;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+  }
+
+  .font-mono, .tabular-nums {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@keyframes nav-flash-critical {
+  0%, 100% {
+    color: #FDA4AF;
+    border-bottom-color: #F43F5E;
+    background-color: rgba(244, 63, 94, 0.18);
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.35);
+  }
+  50% {
+    color: #FFF1F2;
+    border-bottom-color: #FB7185;
+    background-color: rgba(244, 63, 94, 0.04);
+    box-shadow: 0 0 2px rgba(244, 63, 94, 0.05);
+  }
+}
+
+@keyframes nav-flash-warning {
+  0%, 100% {
+    color: #FDE68A;
+    border-bottom-color: #F59E0B;
+    background-color: rgba(245, 158, 11, 0.18);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.32);
+  }
+  50% {
+    color: #FFFBEB;
+    border-bottom-color: #FBBF24;
+    background-color: rgba(245, 158, 11, 0.04);
+    box-shadow: 0 0 2px rgba(245, 158, 11, 0.05);
+  }
+}
+
+.nav-alert-flash-critical {
+  animation: nav-flash-critical 1.15s ease-in-out infinite;
+}
+
+.nav-alert-flash-warning {
+  animation: nav-flash-warning 1.35s ease-in-out infinite;
+}
+
