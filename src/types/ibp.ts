@@ -313,4 +313,64 @@ export interface SupplyChainFixturePayload {
   open_pos?: OpenPurchaseOrder[];
 }
 
+export type AIOptimizationObjective =
+  | 'BALANCED_MARGIN_OTIF'
+  | 'MAX_OTIF_RECOVERY'
+  | 'MIN_TOTAL_COST';
+
+export interface AITransformationStage {
+  stage_number: number; // 1 = AS-IS, 2 = Upstream & BOM, 3 = Finite Scheduling, 4 = TO-BE
+  phase_code: 'AS_IS_DIAGNOSIS' | 'UPSTREAM_EXPEDITE' | 'FINITE_RESEQUENCING' | 'TO_BE_EQUILIBRIUM';
+  title: string;
+  subtitle: string;
+  narrative: string;
+  key_action: string;
+  quantified_impact: string;
+  focus_node_ids: string[];
+}
+
+export interface AINodeTransformationState {
+  node_id: string;
+  node_name: string;
+  node_type: NodeType;
+  as_is_status: 'BOTTLENECK' | 'AT_RISK' | 'NOMINAL';
+  to_be_status: 'OPTIMIZED' | 'BUFFERED' | 'SYNCHRONIZED';
+  as_is_metric_label: string;
+  to_be_metric_label: string;
+  ai_intervention: string;
+}
+
+export interface AISupplyChainOptimizationResponse {
+  optimization_id: string;
+  generated_at: string;
+  model_used: string;
+  company_name: string;
+  primary_uom: string;
+  scenario_context_name: string;
+  objective: AIOptimizationObjective;
+  executive_summary: string;
+  root_cause_diagnosis: string;
+  recommended_levers: {
+    authorize_overtime_override: boolean;
+    expedite_air_enabled: boolean;
+    resequence_campaigns: boolean;
+    supplier_delay_mitigation_buckets: number;
+    safety_stock_boost_pct: number;
+    rationale: string;
+  };
+  transformation_stages: AITransformationStage[];
+  node_transformations: AINodeTransformationState[];
+  as_is_plan: UnisonOptimizationResult;
+  to_be_plan: UnisonOptimizationResult;
+  kpi_deltas: {
+    otif_improvement_pts: number;
+    shortfall_reduction_units: number;
+    net_cost_delta_usd: number;
+    gross_margin_improvement_pts: number;
+    revenue_preserved_usd: number;
+    setup_hours_saved: number;
+  };
+}
+
+
 

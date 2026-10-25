@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Download,
   GitMerge,
+  Sparkles,
 } from 'lucide-react';
 import {
   ControlTowerException,
@@ -35,6 +36,7 @@ import {
 import { PYTHON_FASTAPI_BLUEPRINT } from './data/pythonBlueprint.ts';
 import { MasterDataConfigView } from './components/MasterDataConfigView.tsx';
 import { EnterpriseOnboardingFlow } from './components/EnterpriseOnboardingFlow.tsx';
+import { AiSupplyChainOptimizerModal } from './components/AiSupplyChainOptimizerModal.tsx';
 
 type ActiveModule =
   | 'EKG_DEMAND'
@@ -135,6 +137,11 @@ export default function App() {
     '/api/v1/optimize/unison'
   );
   const [apiLiveResponse, setApiLiveResponse] = useState<string>('');
+
+  // Gemini AI Supply Chain Optimizer & AS-IS -> TO-BE Modal State
+  const [isAiOptimizerOpen, setIsAiOptimizerOpen] = useState<boolean>(false);
+  const [aiTargetScenarioId, setAiTargetScenarioId] =
+    useState<string>('BASELINE');
 
   const fetchInitialWorkspace = async () => {
     setLoading(true);
@@ -1120,7 +1127,23 @@ export default function App() {
             </h1>
           </div>
 
-          <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                setAiTargetScenarioId(
+                  activeModule === 'SCENARIO_SANDBOX' &&
+                    selectedScenarioIds.length > 0
+                    ? selectedScenarioIds[0]
+                    : 'BASELINE'
+                );
+                setIsAiOptimizerOpen(true);
+              }}
+              className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer shadow-sm"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-slate-950" />
+              <span>AI Optimize &amp; AS-IS → TO-BE</span>
+            </button>
             <button
               type="button"
               onClick={handleClearWorkspaceToOnboarding}
@@ -2688,13 +2711,26 @@ export default function App() {
                 </label>
               </div>
 
-              <button
-                type="submit"
-                disabled={actionBusy}
-                className="w-full py-2.5 px-4 bg-sky-400 hover:bg-sky-300 text-slate-950 font-semibold text-xs rounded-md transition-colors cursor-pointer"
-              >
-                Simulate Copy-on-Write Scenario
-              </button>
+              <div className="space-y-2">
+                <button
+                  type="submit"
+                  disabled={actionBusy}
+                  className="w-full py-2.5 px-4 bg-sky-400 hover:bg-sky-300 text-slate-950 font-semibold text-xs rounded-md transition-colors cursor-pointer"
+                >
+                  Simulate Copy-on-Write Scenario
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAiTargetScenarioId('CUSTOM_SANDBOX');
+                    setIsAiOptimizerOpen(true);
+                  }}
+                  className="w-full py-2 px-4 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 font-semibold text-xs rounded-md transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>AI Optimize &amp; Animate AS-IS → TO-BE</span>
+                </button>
+              </div>
 
               {/* Saved Scenario Branches Multi-Select List */}
               <div className="pt-4 border-t border-slate-800 space-y-2.5">
@@ -4599,15 +4635,29 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="relative w-72">
-                <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder="Filter by SKU, work center, or cause..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-900 border border-slate-700 rounded-md pl-8 pr-3 py-1.5 text-xs text-white"
-                />
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAiTargetScenarioId('BASELINE');
+                    setIsAiOptimizerOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 rounded-md transition-colors cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Launch AI AS-IS → TO-BE Guided Resolution</span>
+                </button>
+
+                <div className="relative w-72">
+                  <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Filter by SKU, work center, or cause..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-md pl-8 pr-3 py-1.5 text-xs text-white"
+                  />
+                </div>
               </div>
             </div>
 
@@ -4970,6 +5020,39 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* GEMINI AI SUPPLY CHAIN OPTIMIZER & AS-IS -> TO-BE ANIMATED MODAL */}
+      <AiSupplyChainOptimizerModal
+        isOpen={isAiOptimizerOpen}
+        onClose={() => setIsAiOptimizerOpen(false)}
+        companyName={
+          workspace.company_name ||
+          workspace.user_session?.company_name ||
+          'AstraBio Cold-Chain Therapeutics'
+        }
+        primaryUom={companyMeta.primaryUom}
+        nodes={workspace.nodes}
+        lanes={workspace.lanes}
+        products={workspace.products}
+        workCenters={workspace.work_centers}
+        savedScenarios={workspace.saved_scenarios || []}
+        initialScenarioId={aiTargetScenarioId}
+        customScenario={scenarioForm}
+        onApplyToBeWorkspace={(updatedSnap) => {
+          setWorkspace(updatedSnap);
+          setPropagationData(updatedSnap.default_propagation);
+          if (
+            updatedSnap.saved_scenarios &&
+            updatedSnap.saved_scenarios.length > 0
+          ) {
+            setSelectedScenarioIds(
+              updatedSnap.saved_scenarios.map(
+                (s: ScenarioComparisonResult) => s.scenario_id
+              )
+            );
+          }
+        }}
+      />
     </div>
   );
 }
